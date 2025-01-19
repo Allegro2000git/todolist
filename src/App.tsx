@@ -1,10 +1,12 @@
 import './App.css'
 import { Todolist } from './Todolist'
 import {useState} from "react";
+import {v1} from "uuid";
+
 
 
 export type TaskType = {
-  id: number;
+  id: string;
   title: string;
   isDone: boolean;
 }
@@ -15,22 +17,30 @@ export const App = () => {
 
   const ToDoListTitle_1  = "What to learn";
 
-  const [todolistTasks,setTodolistTasks ] = useState<Array<TaskType>>([
-    {id: 1, title: "HTML&CSS", isDone: true},
-    {id: 2, title: "JS", isDone: false},
-    {id: 3, title: "REACT", isDone: false},
-    {id: 4, title: "Rest API", isDone: false},
-    {id: 5, title: "Redux", isDone: false},
+  const [tasks,setTasks ] = useState<Array<TaskType>>([
+    {id: v1(), title: "HTML&CSS", isDone: true},
+    {id: v1(), title: "JS", isDone: false},
+    {id: v1(), title: "REACT", isDone: false},
+    {id: v1(), title: "Rest API", isDone: false},
+    {id: v1(), title: "Redux", isDone: false},
 ])
 
-    const [filter, setFilter] = useState<filterValuesType>("all")
+    const createTask = (title: string) => {
+      const newTask: TaskType = {
+          id: v1(),
+          title: title,
+          isDone: false
+      }
+      setTasks([newTask, ...tasks]);
+    }
 
-
-    const deleteTask = (taskId: number) => {
-        const nextState: Array<TaskType> = todolistTasks.filter(t=>t.id !== taskId)
-        setTodolistTasks(nextState);
+    const deleteTask = (taskId: string) => {
+        const nextState: Array<TaskType> = tasks.filter(t=>t.id !== taskId)
+        setTasks(nextState);
 }
 
+
+    const [filter, setFilter] = useState<filterValuesType>("all")
     const changeTodolistFilter = (filter: filterValuesType) => {
       setFilter(filter);
     }
@@ -48,7 +58,7 @@ export const App = () => {
 
   return (
       <div className="app">
-        <Todolist title={ToDoListTitle_1} tasks = {getFilteredTasks(todolistTasks,filter)} deleteTask={deleteTask} changeTodolistFilter={changeTodolistFilter}/>
+        <Todolist title={ToDoListTitle_1} tasks = {getFilteredTasks(tasks,filter)} deleteTask={deleteTask} changeTodolistFilter={changeTodolistFilter} createTask={createTask}/>
       </div>
   )
 }
