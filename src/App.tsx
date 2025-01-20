@@ -26,6 +26,7 @@ export const App = () => {
 ])
 
     const createTask = (title: string) => {
+
       const newTask: TaskType = {
           id: v1(),
           title: title,
@@ -34,11 +35,16 @@ export const App = () => {
       setTasks([newTask, ...tasks]);
     }
 
-    const deleteTask = (taskId: string) => {
+    const changeTaskStatus = (taskId: string, newStatus: boolean) => {
+      const nextChangeState: Array<TaskType> = tasks.map(task=> task.id === taskId ? {...task, isDone: newStatus} : task)
+          setTasks(nextChangeState)
+    }
+
+
+    const deleteTask = (taskId: string,) => {
         const nextState: Array<TaskType> = tasks.filter(t=>t.id !== taskId)
         setTasks(nextState);
 }
-
 
     const [filter, setFilter] = useState<filterValuesType>("all")
     const changeTodolistFilter = (filter: filterValuesType) => {
@@ -58,7 +64,7 @@ export const App = () => {
 
   return (
       <div className="app">
-        <Todolist title={ToDoListTitle_1} tasks = {getFilteredTasks(tasks,filter)} deleteTask={deleteTask} changeTodolistFilter={changeTodolistFilter} createTask={createTask}/>
+        <Todolist title={ToDoListTitle_1} tasks = {getFilteredTasks(tasks,filter)} deleteTask={deleteTask} changeTodolistFilter={changeTodolistFilter} createTask={createTask} changeTaskStatus={changeTaskStatus} filter={filter}/>
       </div>
   )
 }
