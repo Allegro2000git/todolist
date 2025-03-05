@@ -2,8 +2,7 @@ import './App.css'
 import { Todolist } from './Todolist'
 import {useState} from "react";
 import {v1} from "uuid";
-
-
+import {AddItemForm} from "./AddItemForm.tsx";
 
 export type TaskType = {
   id: string;
@@ -11,60 +10,112 @@ export type TaskType = {
   isDone: boolean;
 }
 
+type TaskStateType = {
+    [todoListID: string]: TaskType[]
+}
+
 export type filterValuesType = "all" | "active" | "completed";
+
+type ToDoListType = {
+    id: string;
+    title: string;
+    filter: filterValuesType
+}
 
 export const App = () => {
 
-  const ToDoListTitle_1  = "What to learn";
+    let todoListId1 = v1();
+    let todoListId2 = v1();
 
-  const [tasks,setTasks ] = useState<Array<TaskType>>([
-    {id: v1(), title: "HTML&CSS", isDone: true},
-    {id: v1(), title: "JS", isDone: false},
-    {id: v1(), title: "REACT", isDone: false},
-    {id: v1(), title: "Rest API", isDone: false},
-    {id: v1(), title: "Redux", isDone: false},
-])
+    let [todoLists, setTodoLists] = useState<Array<ToDoListType>>([
+        {id: todoListId1, title: "What to learn", filter: "all"},
+        {id: todoListId2, title: "What to buy", filter: "completed"},
+    ])
 
-    const createTask = (title: string) => {
+    const [tasks, setTasks] = useState<TaskStateType>({
+        [todoListId1]: [
+            {id: v1(), title: "HTML&CSS", isDone: true},
+            {id: v1(), title: "JS", isDone: false},
+            {id: v1(), title: "REACT", isDone: false},
+            {id: v1(), title: "Rest API", isDone: false},
+            {id: v1(), title: "Redux", isDone: false},
+        ],
+        [todoListId2]: [
+            {id: v1(), title: "Book", isDone: true},
+            {id: v1(), title: "Milk", isDone: false},
+        ]
+    })
 
-      const newTask: TaskType = {
-          id: v1(),
-          title: title,
-          isDone: false
-      }
-      setTasks([newTask, ...tasks]);
+
+    const createTask = (todoListID: string, title: string) => {
+      const newTask: TaskType = {id: v1(), title, isDone: false}
+        setTasks({...tasks, [todoListID]: [newTask, ...tasks[todoListID]]});
+    }
+    const changeTaskStatus = (todoListID: string, taskId: string, newStatus: boolean) => {
+          setTasks({...tasks, [todoListID]: tasks[todoListID].map(task=> task.id === taskId ? {...task, isDone: newStatus} : task)})
+    }
+    const deleteTask = (todoListID: string, taskId: string) => {
+        setTasks( {...tasks, [todoListID]: tasks[todoListID].filter(task => task.id !== taskId)} )
+    }
+    const changeTaskTitle = (todoListID: string, taskId: string, newTitle: string) => {
+        setTasks({...tasks, [todoListID]: tasks[todoListID].map(task=> task.id === taskId ? {...task, title: newTitle} : task)})
     }
 
-    const changeTaskStatus = (taskId: string, newStatus: boolean) => {
-      const nextChangeState: Array<TaskType> = tasks.map(task=> task.id === taskId ? {...task, isDone: newStatus} : task)
-          setTasks(nextChangeState)
+    /*-----------------------*/
+
+    const changeTodolistFilter = (todoListID: string, value: filterValuesType) => {
+        setTodoLists(todoLists.map(filtered=> filtered.id === todoListID ? {...filtered, filter: value} : filtered))
+    }
+    const deleteToDoList = (todoListID: string) => {
+        let filteredToDoList = todoLists.filter(el => el.id !== todoListID);
+        setTodoLists(filteredToDoList)
+        delete  tasks[todoListID]
+        setTasks({...tasks})
+    }
+    const createTodoList = (newToDoListTitle: string) => {
+        const newToDoListId = v1()
+        setTodoLists([{id: newToDoListId, title: newToDoListTitle, filter: "all"}, ...todoLists])
+
+        setTasks({...tasks, [newToDoListId]: []})
+    }
+
+    const changeTodoListTitle = (todoListID: string, newListTitle: string) => {
+        setTodoLists(todoLists.map(list => list.id === todoListID ? {...list, title: newListTitle} : list))
     }
 
 
-    const deleteTask = (taskId: string,) => {
-        const nextState: Array<TaskType> = tasks.filter(t=>t.id !== taskId)
-        setTasks(nextState);
-}
+    const toDoListComponent = todoLists.map((todoListElement)=> {
 
-    const [filter, setFilter] = useState<filterValuesType>("all")
-    const changeTodolistFilter = (filter: filterValuesType) => {
-      setFilter(filter);
-    }
+        let tasksForTodoList = tasks[todoListElement.id];
 
-    const getFilteredTasks = (tasks: TaskType[], filterValue: filterValuesType) : Array<TaskType>=> {
-        switch (filterValue) {
-            case "active" :
-                return tasks.filter(t=> !t.isDone);
-            case "completed" :
-                return tasks.filter(t=> t.isDone);
-            default:
-                return tasks;
+        if (todoListElement.filter === "active") {
+            tasksForTodoList = tasks[todoListElement.id].filter(t => !t.isDone)
+        } else if (todoListElement.filter === "completed") {
+            tasksForTodoList = tasks[todoListElement.id].filter(t => t.isDone)
         }
-    }
 
-  return (
-      <div className="app">
-        <Todolist title={ToDoListTitle_1} tasks = {getFilteredTasks(tasks,filter)} deleteTask={deleteTask} changeTodolistFilter={changeTodolistFilter} createTask={createTask} changeTaskStatus={changeTaskStatus} filter={filter}/>
-      </div>
-  )
+        return (
+            <Todolist
+                key={todoListElement.id}
+                todoListID={todoListElement.id}
+                title={todoListElement.title}
+                tasks={tasksForTodoList}
+                deleteTask={deleteTask}
+                changeTodolistFilter={changeTodolistFilter}
+                createTask={createTask}
+                changeTaskStatus={changeTaskStatus}
+                filter={todoListElement.filter}
+                changeTaskTitle={changeTaskTitle}
+                deleteToDoList={deleteToDoList}
+                changeTodoListTitle={changeTodoListTitle}
+            />
+        )
+    })
+
+    return (
+        <div className="app">
+            <AddItemForm createItem={createTodoList} maxTitleLength={15}/>
+            {toDoListComponent}
+            </div>)
 }
+
