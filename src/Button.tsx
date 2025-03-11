@@ -7,8 +7,10 @@ type ButtonPropsType = {
     classes?: string;
 }
 
-export const Button = ({title, onClickHandler, disabled, classes}: ButtonPropsType) => {
+const Button = ({title, onClickHandler, disabled, classes}: ButtonPropsType) => {
     return (
         <button className={classes} disabled={disabled} onClick={onClickHandler}>{title}</button>
     );
 }
+
+export default Button;

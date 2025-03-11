@@ -1,26 +1,16 @@
 .app {
-  padding: 30px;
   display: flex;
+  flex-direction: column;
+  width: 100vw;
 }
 
-.app > div {
-  margin-right: 50px;
+.container {
+  display: flex;
+  align-items: center;
 }
 
-.todolist {
-  background-color: rgba(66, 209, 136, 0.91);
-  padding: 15px;
-  border-radius: 10px;
-}
-
-.task {
-  font-weight: 900;
-
-}
-
-.task_done {
+.is-done {
   opacity: 0.5;
-  text-decoration: line-through;
 }
 
 .filterBtn-active {

@@ -1,5 +1,8 @@
 import {ChangeEvent, useState, type KeyboardEvent} from "react";
-import {Button} from "./Button.tsx";
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import {IconButton} from "@mui/material";
+import TextField from "@mui/material/TextField";
+
 
 type AddItemFormPropsType = {
     createItem: (newTitle: string) => void
@@ -30,22 +33,26 @@ export const AddItemForm = ({createItem, maxTitleLength}: AddItemFormPropsType) 
 
     return (
         <div>
-            <input
+            <TextField
+                   size="small"
+                   variant="outlined"
                    value={taskTitle}
                    placeholder={`max title length is ${maxTitleLength} charters`}
                    className={error ? "taskInputError" : ""}
+                   error={error}
+                   helperText={error && "Enter valid title"}
                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
                        error && setError(false)
                        setTaskTitle(e.currentTarget.value)
                    }}
                    onKeyDown={createTaskOnKeyDownHandler}
             />
-            <Button
-                    title={"+"}
-                    onClickHandler={createTaskOnClickHandler}
-                    disabled={!taskTitle.length || maxTitleLengthError}
-            />
-            {error && <div style={{ color: "red" }}>enter valid title</div>}
+            <IconButton
+                onClick={createTaskOnClickHandler}
+                disabled={!taskTitle.length || maxTitleLengthError}
+            >
+                <AddCircleOutlineIcon/>
+            </IconButton>
             {!taskTitle && <div>Enter title, please</div>}
             {taskTitle && taskTitle.length <= maxTitleLength && <div>{`Max title length is ${maxTitleLength} charters`}</div>}
             {taskTitle.length > maxTitleLength && <div style={{color:"red"}}>Your task is too long</div>}
