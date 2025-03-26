@@ -1,5 +1,4 @@
 
-
 type ButtonPropsType = {
     title: string;
     onClickHandler?: ()=> void;

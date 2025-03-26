@@ -1,4 +1,4 @@
-import {filterValuesType, TaskType} from "./App.tsx";
+import {FilterValuesType, TaskType} from "./App.tsx";
 import {AddItemForm} from "./AddItemForm.tsx";
 import {EditableSpan} from "./EditableSpan.tsx";
 import Button from "@mui/material/Button"
@@ -13,10 +13,10 @@ export type TodolistPropsType = {
     todoListID: string;
     title: string;
     tasks: Array<TaskType>;
-    filter: filterValuesType;
+    filter: FilterValuesType;
     deleteTask: (todoListID: string, taskId: string) => void;
-    changeTodolistFilter: (todoListID: string, filter: filterValuesType) => void;
-    createTask: (todoListID: string, title: string) => void;
+    changeTodolistFilter: (todoListID: string, filter: FilterValuesType) => void;
+    createTask: (todoListID: string, newTitle: string) => void;
     changeTaskStatus: (todoListID: string, taskId: string, newStatus: boolean) =>void;
     deleteToDoList: (todoListID: string) => void;
     changeTaskTitle: (todoListID: string, taskId: string, newTitle: string) => void;
